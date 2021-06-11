@@ -17,7 +17,23 @@ router.get("/", async (req, res) => {
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"'])
+    // preload 1
+    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"'])
+
+    // preload 2
+    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
+    '</javascripts/main.js>; rel="preload" as="script"']);
+
+    // preload 3
+    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
+    // '</javascripts/main.js>; rel="preload" as="script"',
+    // '</stylesheets/style.css>; rel="preload" as="style"']);
+
+    // PH 1
+    // res.append('Link', ['</javascripts/main.js>; importance="high"'])
+
+
+
     res.render("shop/home", { pageName: "Home", products });
   } catch (error) {
     console.log(error);
