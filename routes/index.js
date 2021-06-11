@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    res.links({preload: 'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; as="font"'});
+    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"'])
     res.render("shop/home", { pageName: "Home", products });
   } catch (error) {
     console.log(error);
