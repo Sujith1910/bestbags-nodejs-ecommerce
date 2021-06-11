@@ -33,10 +33,12 @@ let options = {
   setHeaders: function (res, path, stat) {
         console.log(path)
     // console.log(path.split("/")[path.split("/").length-1])
-    if (path.split("/")[path.split("/").length-1] == 'index.html') {
-        res.set('x-timestamp', Date.now())
+    if (path=="/")
+      res.set('x-timestamp', Date.now())
+    // if (path.split("/")[path.split("/").length-1] == 'index.html') {
+    //     res.set('x-timestamp', Date.now())
         // res.set('Link', '</js/main.js>; importance="high"')
-        }
+    //     }
   }
 }
 app.use(express.static(path.join(__dirname, "public"),options));
