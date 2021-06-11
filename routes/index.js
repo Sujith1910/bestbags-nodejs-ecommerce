@@ -21,13 +21,13 @@ router.get("/", async (req, res) => {
     // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"'])
 
     // preload 2
-    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    '</javascripts/main.js>; rel="preload" as="script"']);
+    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
+    // '</javascripts/main.js>; rel="preload" as="script"']);
 
     // preload 3
-    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    // '</javascripts/main.js>; rel="preload" as="script"',
-    // '</stylesheets/style.css>; rel="preload" as="style"']);
+    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
+    '</javascripts/main.js>; rel="preload" as="script"',
+    '</stylesheets/style.css>; rel="preload" as="style"']);
 
     // PH 1
     // res.append('Link', ['</javascripts/main.js>; importance="high"'])
