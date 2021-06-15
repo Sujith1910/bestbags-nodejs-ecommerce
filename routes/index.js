@@ -30,7 +30,11 @@ router.get("/", async (req, res) => {
     // '</stylesheets/style.css>; rel="preload" as="style"']);
 
     // PH 1
-    res.append('Link', ['</javascripts/main.js>; importance="high"'])
+    // res.append('Link', ['</javascripts/main.js>; importance=high'])
+
+    // PH 2 
+    // res.append('Link', ['</javascripts/main.js>; importance="low"',
+    // ']);
 
 
 
