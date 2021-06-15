@@ -17,26 +17,24 @@ router.get("/", async (req, res) => {
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    // preload 1
+
+    // preload 1 resource - font
     // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"'])
 
-    // preload 2
+    // preload 2 resources - font+js
     // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
     // '</javascripts/main.js>; rel="preload" as="script"']);
 
-    // preload 3
+    // preload 3 resources - font+js+css
     // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
     // '</javascripts/main.js>; rel="preload" as="script"',
     // '</stylesheets/style.css>; rel="preload" as="style"']);
 
-    // PH 1
-    res.append('Link', ['</javascripts/main.js>; importance=high', '</images/slide2.jpg>; importance=high'])
+    // Priority hints 1 resource - js
+    // res.append('Link', ['</javascripts/main.js>; importance=high'])
 
-    // PH 2 
-    // res.append('Link', ['</javascripts/main.js>; importance="low"',
-    // ']);
-
-
+    // Priority hints 2 resources - js+image
+    // res.append('Link', ['</javascripts/main.js>; importance=low','</images/slide2.jpg>; importance=high']);
 
     res.render("shop/home", { pageName: "Home", products });
   } catch (error) {
