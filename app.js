@@ -119,10 +119,11 @@ app.use(function (err, req, res, next) {
 });
 
 var port = process.env.PORT || 8000;
-// app.set("port", port);
-// app.listen(port, () => {
-//   console.log("Server running at port " + port);
-// });
+app.set("port", port);
+app.listen(port, () => {
+  console.log("Server running at port " + port);
+});
+
 // http2
 //     // .raw
 //     .createServer({
@@ -139,19 +140,19 @@ var port = process.env.PORT || 8000;
 //         /* eslint-enable no-console */
 //     });
 
-spdy
-    .createServer({
-        key: fs.readFileSync(path.resolve(__dirname, './server.key')),
-        cert: fs.readFileSync(path.resolve(__dirname, './server.crt'))
-    }, app)
-    .listen(port, (err) => {
-        if (err) {
-            throw new Error(err);
-        }
+// spdy
+//     .createServer({
+//         key: fs.readFileSync(path.resolve(__dirname, './server.key')),
+//         cert: fs.readFileSync(path.resolve(__dirname, './server.crt'))
+//     }, app)
+//     .listen(port, (err) => {
+//         if (err) {
+//             throw new Error(err);
+//         }
 
-        /* eslint-disable no-console */
-        console.log('Listening on port: ' + port + '.');
-        /* eslint-enable no-console */
-    });
+//         /* eslint-disable no-console */
+//         console.log('Listening on port: ' + port + '.');
+//         /* eslint-enable no-console */
+//     });
 
 module.exports = app;
