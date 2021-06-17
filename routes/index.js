@@ -1,4 +1,7 @@
 const express = require("express");
+const spdy = require('spdy');
+const fs = require('fs'); 
+const path = require('path');
 const csrf = require("csurf");
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 const Product = require("../models/product");
@@ -42,6 +45,8 @@ router.get("/", async (req, res) => {
     res.redirect("/");
   }
 });
+
+
 
 // GET: add a product to the shopping cart when "Add to cart" button is pressed
 router.get("/add-to-cart/:id", async (req, res) => {

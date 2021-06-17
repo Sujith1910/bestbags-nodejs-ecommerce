@@ -2,6 +2,10 @@ require("dotenv").config();
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
+const fs = require('fs'); 
+const spdy = require('spdy');
+
+
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
@@ -11,8 +15,14 @@ const flash = require("connect-flash");
 const Category = require("./models/category");
 var MongoStore = require("connect-mongo")(session);
 const connectDB = require("./config/db");
+const http2 = require('http2');
 
+const loggee = (req, res, next) => {
+  console.log("Hello from HTTP2");
+  next();
+}
 const app = express();
+app.use(loggee);
 require("./config/passport");
 
 // mongodb configuration
@@ -108,10 +118,40 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-var port = process.env.PORT || 3000;
-app.set("port", port);
-app.listen(port, () => {
-  console.log("Server running at port " + port);
-});
+var port = process.env.PORT || 8000;
+// app.set("port", port);
+// app.listen(port, () => {
+//   console.log("Server running at port " + port);
+// });
+// http2
+//     // .raw
+//     .createServer({
+//       key: fs.readFileSync('./localhost.key'),
+//       cert: fs.readFileSync('./localhost.crt')
+//   }, app)
+//     .listen(port, (err) => {
+//         if (err) {
+//             throw new Error(err);
+//         }
+
+//         /* eslint-disable no-console */
+//         console.log('Listening on port: ' + port + '.');
+//         /* eslint-enable no-console */
+//     });
+
+spdy
+    .createServer({
+        key: fs.readFileSync(path.resolve(__dirname, './server.key')),
+        cert: fs.readFileSync(path.resolve(__dirname, './server.crt'))
+    }, app)
+    .listen(port, (err) => {
+        if (err) {
+            throw new Error(err);
+        }
+
+        /* eslint-disable no-console */
+        console.log('Listening on port: ' + port + '.');
+        /* eslint-enable no-console */
+    });
 
 module.exports = app;
