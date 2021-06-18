@@ -17,50 +17,16 @@ router.use(csrfProtection);
 
 // // GET: home page
 router.get("/", async (req, res) => {
-
-  
   try {
     // console.log("Inside try")
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'  
-    ])
-
-    res.render("shop/home", { pageName: "Home", products });
-
-    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css']
-    let dependencyType = ['application/javascript', 'text/css']
-    let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
-    Promise.all(filesToRead)
-      .then( (files) => {
-          files.map( (file, index) => {
-            let stream = res.push(dependencies[index], {
-              status: 200, // optional
-              method: 'GET', // optional
-              request: {
-                accept: '*/*'
-              },
-              response: {
-                'content-type': dependencyType[index]
-              }
-            })
-            stream.on('error', function(err) {
-              console.log(err)
-            })      
-            stream.end(file)
-          })
-          
-      })
-    .catch(err => console.log(err))
-    
+    res.render("shop/home", { pageName: "Home", products });    
   } catch (error) {
     console.log(error);
     res.redirect("/");
   }
-    
 });
 
 
