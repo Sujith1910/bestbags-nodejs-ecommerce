@@ -144,8 +144,8 @@ var port = process.env.PORT || 8000;
 
 spdy
     .createServer({
-        key: fs.readFileSync('./privkey.pem'),
-        cert: fs.readFileSync('./cert.pem')
+        key: fs.readFileSync('../privkey.pem'),
+        cert: fs.readFileSync('../cert.pem')
     }, app)
     .listen(port, (err) => {
         if (err) {
