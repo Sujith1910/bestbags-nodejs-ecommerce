@@ -117,27 +117,12 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-var port = process.env.PORT || 8000;
+var port = process.env.PORT || 443;
 // app.set("port", port);
 // app.listen(port, () => {
 //   console.log("Server running at port " + port);
 // });
 
-// http2
-//     // .raw
-//     .createServer({
-//       key: fs.readFileSync('./localhost.key'),
-//       cert: fs.readFileSync('./localhost.crt')
-//   }, app)
-//     .listen(port, (err) => {
-//         if (err) {
-//             throw new Error(err);
-//         }
-
-//         /* eslint-disable no-console */
-//         console.log('Listening on port: ' + port + '.');
-//         /* eslint-enable no-console */
-//     });
 
 spdy
     .createServer({
