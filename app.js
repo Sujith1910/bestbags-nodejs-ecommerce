@@ -19,12 +19,9 @@ var MongoStore = require("connect-mongo")(session);
 const connectDB = require("./config/db");
 const http2 = require('http2');
 
-const loggee = (req, res, next) => {
-  console.log("Hello from HTTP2");
-  next();
-}
+
 const app = express();
-app.use(loggee);
+
 require("./config/passport");
 
 // mongodb configuration

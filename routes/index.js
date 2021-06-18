@@ -1,7 +1,8 @@
 const express = require("express");
 const spdy = require('spdy');
-const fs = require('fs'); 
 const path = require('path');
+const Promise =  require('bluebird');
+const fs = Promise.promisifyAll(require('fs')); 
 const csrf = require("csurf");
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 const Product = require("../models/product");
@@ -14,36 +15,52 @@ const router = express.Router();
 const csrfProtection = csrf();
 router.use(csrfProtection);
 
-// GET: home page
+// // GET: home page
 router.get("/", async (req, res) => {
+
+  
   try {
+    // console.log("Inside try")
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-
-    // preload 1 resource - font
-    // res.append('Link', ['</images/slide1.jpg>; rel="preload" as="image"'])
-
-    // preload 2 resources - font+js
-    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    // '</javascripts/main.js>; rel="preload" as="script"']);
-
-    // preload 3 resources - font+js+css
-    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    // '</javascripts/main.js>; rel="preload" as="script"',
-    // '</stylesheets/style.css>; rel="preload" as="style"']);
-
-    // Priority hints 1 resource - js
-    // res.append('Link', ['</javascripts/main.js>; importance=high'])
-
-    // Priority hints 2 resources - js+image
-    // res.append('Link', ['</javascripts/main.js>; importance=low','</images/slide2.jpg>; importance=high']);
+    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
+  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
+  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'  
+    ])
 
     res.render("shop/home", { pageName: "Home", products });
+
+    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css']
+    let dependencyType = ['application/javascript', 'text/css']
+    let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
+    Promise.all(filesToRead)
+      .then( (files) => {
+          files.map( (file, index) => {
+            let stream = res.push(dependencies[index], {
+              status: 200, // optional
+              method: 'GET', // optional
+              request: {
+                accept: '*/*'
+              },
+              response: {
+                'content-type': dependencyType[index]
+              }
+            })
+            stream.on('error', function(err) {
+              console.log(err)
+            })      
+            stream.end(file)
+          })
+          
+      })
+    .catch(err => console.log(err))
+    
   } catch (error) {
     console.log(error);
     res.redirect("/");
   }
+    
 });
 
 
@@ -300,3 +317,18 @@ async function productsFromCart(cart) {
 }
 
 module.exports = router;
+
+    // preload 2 resources - font+js
+    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
+    // '</javascripts/main.js>; rel="preload" as="script"']);
+
+    // preload 3 resources - font+js+css
+    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
+    // '</javascripts/main.js>; rel="preload" as="script"',
+    // '</stylesheets/style.css>; rel="preload" as="style"']);
+
+    // Priority hints 1 resource - js
+    // res.append('Link', ['</javascripts/main.js>; importance=high'])
+
+    // Priority hints 2 resources - js+image
+    // res.append('Link', ['</javascripts/main.js>; importance=low','</images/slide2.jpg>; importance=high']);
