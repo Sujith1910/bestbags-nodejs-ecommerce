@@ -2,6 +2,8 @@ require("dotenv").config();
 const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
+// const http2 = require('http2');
+
 const fs = require('fs'); 
 const spdy = require('spdy');
 
@@ -142,8 +144,8 @@ var port = process.env.PORT || 8000;
 
 spdy
     .createServer({
-        key: fs.readFileSync('/etc/letsencrypt/live/demo-ecommerce.akalab.ca/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/demo-ecommerce.akalab.ca/fullchain.pem')
+        key: fs.readFileSync('./privkey.pem'),
+        cert: fs.readFileSync('./cert.pem')
     }, app)
     .listen(port, (err) => {
         if (err) {

@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
       .populate("category");
 
     // preload 1 resource - font
-    res.append('Link', ['</images/slide1.jpg>; rel="preload" as="image"'])
+    // res.append('Link', ['</images/slide1.jpg>; rel="preload" as="image"'])
 
     // preload 2 resources - font+js
     // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
