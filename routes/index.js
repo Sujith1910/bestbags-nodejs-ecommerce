@@ -31,8 +31,8 @@ router.get("/", async (req, res) => {
 
     res.render("shop/home", { pageName: "Home", products });
 
-    let dependencies = ['/images/slide1.jpg']
-    let dependencyType = ['image/jpeg']
+    let dependencies = ['/images/slide1.jpg','/stlesheets/style.css','/javascripts/main.js']
+    let dependencyType = ['image/jpeg','text/css','application/javascript']
     let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
     Promise.all(filesToRead)
       .then( (files) => {
@@ -316,18 +316,3 @@ async function productsFromCart(cart) {
 }
 
 module.exports = router;
-
-    // preload 2 resources - font+js
-    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    // '</javascripts/main.js>; rel="preload" as="script"']);
-
-    // preload 3 resources - font+js+css
-    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    // '</javascripts/main.js>; rel="preload" as="script"',
-    // '</stylesheets/style.css>; rel="preload" as="style"']);
-
-    // Priority hints 1 resource - js
-    // res.append('Link', ['</javascripts/main.js>; importance=high'])
-
-    // Priority hints 2 resources - js+image
-    // res.append('Link', ['</javascripts/main.js>; importance=low','</images/slide2.jpg>; importance=high']);
