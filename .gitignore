@@ -2,3 +2,4 @@
 .env
 /.adminbro
 *.xlsx
+.DS_Store
