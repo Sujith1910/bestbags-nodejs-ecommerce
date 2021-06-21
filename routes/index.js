@@ -31,8 +31,8 @@ router.get("/", async (req, res) => {
 
     res.render("shop/home", { pageName: "Home", products });
 
-    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css']
-    let dependencyType = ['application/javascript', 'text/css']
+    let dependencies = ['/images/slide1.jpg']
+    let dependencyType = ['image/jpeg']
     let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
     Promise.all(filesToRead)
       .then( (files) => {
