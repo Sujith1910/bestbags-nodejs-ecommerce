@@ -56,5 +56,13 @@
 
 
 <script src="/javascripts/main.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => console.log("SW registered successfully with scope: ", registration.scope))
+      .catch((err) => console.log("SW Registration failed: ", err));
+  }
+</script>
 </body>
 </html>
