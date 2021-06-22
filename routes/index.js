@@ -11,6 +11,7 @@ const Cart = require("../models/cart");
 const Order = require("../models/order");
 const middleware = require("../middleware");
 const router = express.Router();
+const { BloomFilter } = require('../public/javascripts/bloomfilter');
 
 const csrfProtection = csrf();
 router.use(csrfProtection);
@@ -31,8 +32,26 @@ router.get("/", async (req, res) => {
 
     res.render("shop/home", { pageName: "Home", products });
 
-    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css']
-    let dependencyType = ['application/javascript', 'text/css']
+    
+    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css'];
+    let dependencyType = ['application/javascript', 'text/css'];
+
+    // Use BloomFilter to prevent pushing of cached resources
+    if (req.headers.buckets && req.headers.k) {
+      const filter = new BloomFilter(JSON.parse('['+req.headers.buckets+']'), +req.headers.k);
+
+      for (let i = 0; i < dependencies.length; i++) {
+        if (filter.test(dependencies[i])) {
+          delete dependencies[i];
+          delete dependencyType[i];
+        }
+      }
+
+      dependencies = dependencies.filter((value) => value !== undefined);
+      dependencyType = dependencyType.filter((value) => value !== undefined);
+    }
+    console.log(dependencies);
+
     let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
     Promise.all(filesToRead)
       .then( (files) => {
