@@ -24,15 +24,11 @@ router.get("/", async (req, res) => {
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'  
-    ])
 
     res.render("shop/home", { pageName: "Home", products });
 
-    let dependencies = ['/images/slide1.jpg','/stlesheets/style.css','/javascripts/main.js']
-    let dependencyType = ['image/jpeg','text/css','application/javascript']
+    let dependencies = ['/images/slide1.jpg']
+    let dependencyType = ['image/jpeg']
     let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
     Promise.all(filesToRead)
       .then( (files) => {
