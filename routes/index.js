@@ -34,29 +34,27 @@ router.get("/", async (req, res) => {
     let dependencies = ['/images/slide1.jpg','/stylesheets/style.css','/javascripts/main.js']
     let dependencyType = ['image/jpeg','text/css','application/javascript']
     console.log(__dirname)
-    let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
-    Promise.all(filesToRead)
-      .then( (files) => {
-          files.map( (file, index) => {
-            let stream = res.push(dependencies[index], {
-              status: 200, // optional
-              method: 'GET', // optional
-              request: {
-                accept: '*/*'
-              },
-              response: {
-                'content-type': dependencyType[index]
-              }
-            })
-            stream.on('error', function(err) {
-              console.log(err)
-            })      
-            stream.end(file)
-          })
-          
+  // let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
+  for(let index = 0; index < dependencies.length; index++) {
+    fs.readFileAsync(`${__dirname}/../public${dependencies[index]}`)
+    .then( (file) => {
+      let stream = res.push(dependencies[index], {
+        status: 200, // optional
+        method: 'GET', // optional
+        request: {
+          accept: '*/*'
+        },
+        response: {
+          'content-type': dependencyType[index]
+        }
       })
-    .catch(err => console.log(err))
-    
+      stream.on('error', function(err) {
+        console.log(err)
+      })      
+      stream.end(file)
+    }).catch(err => console.log(err))
+  }
+  
   } catch (error) {
     console.log(error);
     res.redirect("/");

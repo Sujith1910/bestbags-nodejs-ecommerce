@@ -4,7 +4,8 @@
   "main": "app.js",
   "description": "A virtual ecommerce website using Node js, Express js, and Mongoose.",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "dev" : "PORT=8000 nodemon app.js"
   },
   "author": "Maryam Aljanabi",
   "license": "MIT",
