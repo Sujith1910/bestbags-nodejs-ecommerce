@@ -35,6 +35,7 @@ router.get("/", async (req, res) => {
     let dependencyType = ['image/jpeg','text/css','application/javascript']
     console.log(__dirname)
   // let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
+  //parallel pushes
   for(let index = 0; index < dependencies.length; index++) {
     fs.readFileAsync(`${__dirname}/../public${dependencies[index]}`)
     .then( (file) => {
