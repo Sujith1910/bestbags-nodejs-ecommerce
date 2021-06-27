@@ -36,9 +36,14 @@ router.get("/", async (req, res) => {
     console.log(__dirname)
   // let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
   //parallel pushes
+  let predate = new Date();
+  let before = predate.getTime();
+  console.log("before for: " + before)
   for(let index = 0; index < dependencies.length; index++) {
     fs.readFileAsync(`${__dirname}/../public${dependencies[index]}`)
     .then( (file) => {
+      let indate = new Date();
+      console.log("inside .then: "+indate.getTime())
       let stream = res.push(dependencies[index], {
         status: 200, // optional
         method: 'GET', // optional
@@ -55,6 +60,9 @@ router.get("/", async (req, res) => {
       stream.end(file)
     }).catch(err => console.log(err))
   }
+  let postdate = new Date();
+  let after = postdate.getTime();
+  console.log("after for: " + after)
   
   } catch (error) {
     console.log(error);
