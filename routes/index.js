@@ -29,6 +29,24 @@ router.get("/", async (req, res) => {
   }
 });
 
+// // GET: home page with priority hints
+router.get("/with-priority-hints", async (req, res) => {
+  try {
+    // console.log("Inside try")
+    const products = await Product.find({})
+      .sort("-createdAt")
+      .populate("category");
+    res.append('Link',[
+      // '</images/dept0.jpg>; importance=high',
+  // '</javascripts/main.js>; importance=high',
+  '</images/slide1.jpg>; importance=high'
+  ])
+    res.render("shop/home", { pageName: "Home", products });    
+  } catch (error) {
+    console.log(error);
+    res.redirect("/");
+  }
+});
 
 // GET: add a product to the shopping cart when "Add to cart" button is pressed
 router.get("/add-to-cart/:id", async (req, res) => {
