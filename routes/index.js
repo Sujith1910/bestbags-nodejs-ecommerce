@@ -36,10 +36,16 @@ router.get("/with-priority-hints", async (req, res) => {
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    res.append('Link',[
-      // '</images/dept0.jpg>; importance=high',
-  // '</javascripts/main.js>; importance=high',
-  '</images/slide1.jpg>; importance=high'
+
+    // preloading font
+    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
+    // '</javascripts/main.js>; rel="preload" as="script"',
+    // '</stylesheets/style.css>; rel="preload" as="style"']);
+
+    // Setting PriorityHints
+    res.append('Link',['</javascripts/main.js>; importance=high',
+    // '</images/dept0.jpg>; importance=high',
+    // '</images/slide1.jpg>; importance=high'
   ])
     res.render("shop/home", { pageName: "Home", products });    
   } catch (error) {
