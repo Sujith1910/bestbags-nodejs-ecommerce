@@ -1,8 +1,8 @@
 const express = require("express");
-const spdy = require('spdy');
-const path = require('path');
-const Promise =  require('bluebird');
-const fs = Promise.promisifyAll(require('fs')); 
+const spdy = require("spdy");
+const path = require("path");
+const Promise = require("bluebird");
+const fs = Promise.promisifyAll(require("fs"));
 const csrf = require("csurf");
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 const Product = require("../models/product");
@@ -11,34 +11,28 @@ const Cart = require("../models/cart");
 const Order = require("../models/order");
 const middleware = require("../middleware");
 const router = express.Router();
-const { BloomFilter } = require('../public/javascripts/bloomfilter');
+const { BloomFilter } = require("../public/javascripts/bloomfilter");
 
 const csrfProtection = csrf();
 router.use(csrfProtection);
 
 // // GET: home page
 router.get("/", async (req, res) => {
-
-  
   try {
     // console.log("Inside try")
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'  
-    ])
 
-    res.render("shop/home", { pageName: "Home", products });
-
-    
-    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css'];
-    let dependencyType = ['application/javascript', 'text/css'];
+    let dependencies = ["/javascripts/main.js", "/stylesheets/style.css"];
+    let dependencyType = ["application/javascript", "text/css"];
 
     // Use BloomFilter to prevent pushing of cached resources
     if (req.headers.buckets && req.headers.k) {
-      const filter = new BloomFilter(JSON.parse('['+req.headers.buckets+']'), +req.headers.k);
+      const filter = new BloomFilter(
+        JSON.parse("[" + req.headers.buckets + "]"),
+        +req.headers.k
+      );
 
       for (let i = 0; i < dependencies.length; i++) {
         if (filter.test(dependencies[i])) {
@@ -50,38 +44,45 @@ router.get("/", async (req, res) => {
       dependencies = dependencies.filter((value) => value !== undefined);
       dependencyType = dependencyType.filter((value) => value !== undefined);
     }
-    console.log(dependencies);
+    console.log("\n", dependencies);
 
-    let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
+    res.append("Link", [
+      'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
+      'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"',
+      'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"',
+      ...dependencies.map(res => res + '; rel="preload" type="pushed"')
+    ]);
+
+    // console.log(req.headers);
+    res.render("shop/home", { pageName: "Home", products });
+
+    let filesToRead = dependencies.map((dep) => fs.readFileAsync(`${__dirname}/../public${dep}`));
+
     Promise.all(filesToRead)
-      .then( (files) => {
-          files.map( (file, index) => {
-            let stream = res.push(dependencies[index], {
-              status: 200, // optional
-              method: 'GET', // optional
-              request: {
-                accept: '*/*'
-              },
-              response: {
-                'content-type': dependencyType[index]
-              }
-            })
-            stream.on('error', function(err) {
-              console.log(err)
-            })      
-            stream.end(file)
-          })
-          
+      .then((files) => {
+        files.map((file, index) => {
+          let stream = res.push(dependencies[index], {
+            status: 200, // optional
+            method: "GET", // optional
+            request: {
+              accept: "*/*",
+            },
+            response: {
+              "content-type": dependencyType[index],
+            },
+          });
+          stream.on("error", function (err) {
+            console.log(err);
+          });
+          stream.end(file);
+        });
       })
-    .catch(err => console.log(err))
-    
+      .catch((err) => console.log(err));
   } catch (error) {
     console.log(error);
     res.redirect("/");
   }
-    
 });
-
 
 // GET: add a product to the shopping cart when "Add to cart" button is pressed
 router.get("/add-to-cart/:id", async (req, res) => {
@@ -336,17 +337,17 @@ async function productsFromCart(cart) {
 
 module.exports = router;
 
-    // preload 2 resources - font+js
-    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    // '</javascripts/main.js>; rel="preload" as="script"']);
+// preload 2 resources - font+js
+// res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
+// '</javascripts/main.js>; rel="preload" as="script"']);
 
-    // preload 3 resources - font+js+css
-    // res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"', 
-    // '</javascripts/main.js>; rel="preload" as="script"',
-    // '</stylesheets/style.css>; rel="preload" as="style"']);
+// preload 3 resources - font+js+css
+// res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
+// '</javascripts/main.js>; rel="preload" as="script"',
+// '</stylesheets/style.css>; rel="preload" as="style"']);
 
-    // Priority hints 1 resource - js
-    // res.append('Link', ['</javascripts/main.js>; importance=high'])
+// Priority hints 1 resource - js
+// res.append('Link', ['</javascripts/main.js>; importance=high'])
 
-    // Priority hints 2 resources - js+image
-    // res.append('Link', ['</javascripts/main.js>; importance=low','</images/slide2.jpg>; importance=high']);
+// Priority hints 2 resources - js+image
+// res.append('Link', ['</javascripts/main.js>; importance=low','</images/slide2.jpg>; importance=high']);
