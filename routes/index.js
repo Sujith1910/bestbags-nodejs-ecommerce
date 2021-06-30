@@ -20,6 +20,9 @@ router.get("/", async (req, res) => {
 
   
   try {
+    let req_date = new Date();
+    let req_time = req_date.getTime();
+    console.log("Request received: " + req_time)
     // console.log("Inside try")
     const products = await Product.find({})
       .sort("-createdAt")
@@ -28,12 +31,19 @@ router.get("/", async (req, res) => {
   'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
   'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'  
     ])
+    let after_preload = new Date();
+    let after_preload_time = after_preload.getTime();
+    console.log("PRELOAD time: " + after_preload_time)
 
     res.render("shop/home", { pageName: "Home", products });
+    // let after_render = new Date();
+    // let after_render_time = after_render.getTime();
+    // console.log("RENDER time: " + after_render_time)
 
     let dependencies = ['/javascripts/main.js', '/stylesheets/style.css']
     let dependencyType = ['application/javascript', 'text/css']
     let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
+
     Promise.all(filesToRead)
       .then( (files) => {
           files.map( (file, index) => {
@@ -52,10 +62,16 @@ router.get("/", async (req, res) => {
             })      
             stream.end(file)
           })
-          
+          let after_push = new Date();
+          let after_push_time = after_push.getTime();
+          console.log("PUSH time: " + after_push_time)
       })
     .catch(err => console.log(err))
-    
+    let after_response = new Date();
+    let after_response_time = after_response.getTime();
+    // console.log("After RESPONE: " + after_response_time)
+    let server_time= after_response_time - req_time;
+    console.log("Server time: " + server_time);
   } catch (error) {
     console.log(error);
     res.redirect("/");
