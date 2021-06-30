@@ -26,17 +26,25 @@ router.get("/", async (req, res) => {
       .populate("category");
     res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
   'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"',
-  '</images/slide1.jpg>; rel="preload" as="image"'
+  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'
+  // '</images/slide1.jpg>; rel="preload" as="image"'
     ])
 
     res.render("shop/home", { pageName: "Home", products });
 
-    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css']
-    let dependencyType = ['application/javascript', 'text/css']
+    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css', '/images/slide1.jpg']
+    let dependencyType = ['application/javascript', 'text/css', 'image/jpeg']
     let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
+
+    let predate = new Date();
+    let before = predate.getTime();
+    console.log("before for: " + before)
+
     Promise.all(filesToRead)
       .then( (files) => {
+        let indate = new Date();
+        console.log("inside .then: "+indate.getTime())
+  
           files.map( (file, index) => {
             let stream = res.push(dependencies[index], {
               status: 200, // optional
@@ -56,7 +64,9 @@ router.get("/", async (req, res) => {
           
       })
     .catch(err => console.log(err))
-    
+    let postdate = new Date();
+    let after = postdate.getTime();
+    console.log("after for: " + after)
   } catch (error) {
     console.log(error);
     res.redirect("/");
