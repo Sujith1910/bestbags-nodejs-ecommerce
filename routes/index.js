@@ -17,7 +17,9 @@ router.use(csrfProtection);
 
 // // GET: home page
 router.get("/", async (req, res) => {
-
+  let req_date = new Date();
+  let req_time = req_date.getTime();
+  console.log("Request received: " + req_time)
   
   try {
     // console.log("Inside try")
@@ -28,22 +30,21 @@ router.get("/", async (req, res) => {
   'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
   'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'  
     ])
+    let after_preload = new Date();
+    let after_preload_time = after_preload.getTime();
+    console.log("PRELOAD time: " + after_preload_time)
 
     res.render("shop/home", { pageName: "Home", products });
 
     let dependencies = ['/images/slide1.jpg','/stylesheets/style.css','/javascripts/main.js']
     let dependencyType = ['image/jpeg','text/css','application/javascript']
-    console.log(__dirname)
+    
   // let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
   //parallel pushes
-  let predate = new Date();
-  let before = predate.getTime();
-  console.log("before for: " + before)
+  let push_count = 0;
   for(let index = 0; index < dependencies.length; index++) {
     fs.readFileAsync(`${__dirname}/../public${dependencies[index]}`)
     .then( (file) => {
-      let indate = new Date();
-      console.log("inside .then: "+indate.getTime())
       let stream = res.push(dependencies[index], {
         status: 200, // optional
         method: 'GET', // optional
@@ -58,11 +59,19 @@ router.get("/", async (req, res) => {
         console.log(err)
       })      
       stream.end(file)
+      push_count++;
+      if (push_count==3){
+        let after_push = new Date();
+        let after_push_time = after_push.getTime();
+        console.log("PUSH time: " + after_push_time)
+      }
+      
     }).catch(err => console.log(err))
   }
-  let postdate = new Date();
-  let after = postdate.getTime();
-  console.log("after for: " + after)
+  let after_response = new Date();
+  let after_response_time = after_response.getTime();
+  let server_time= after_response_time - req_time;
+  console.log("Server time: " + server_time);
   
   } catch (error) {
     console.log(error);
