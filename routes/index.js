@@ -17,34 +17,33 @@ router.use(csrfProtection);
 
 // // GET: home page
 router.get("/", async (req, res) => {
-
+  let req_date = new Date();
+  let req_time = req_date.getTime();
+  console.log("Request received: " + req_time)
   
   try {
     // console.log("Inside try")
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-    res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
-  'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"'
-  // '</images/slide1.jpg>; rel="preload" as="image"'
-    ])
+      res.append('Link', ['https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
+    'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"', 
+    'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"',
+    '</images/slide1.jpg>; rel="preload" as="image"'
+      ])
+
+    let after_preload = new Date();
+    let after_preload_time = after_preload.getTime();
+    console.log("PRELOAD time: " + after_preload_time)
 
     res.render("shop/home", { pageName: "Home", products });
 
-    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css', '/images/slide1.jpg']
-    let dependencyType = ['application/javascript', 'text/css', 'image/jpeg']
+    let dependencies = ['/javascripts/main.js', '/stylesheets/style.css']
+    let dependencyType = ['application/javascript', 'text/css']
     let filesToRead = dependencies.map( (dep) => fs.readFileAsync(`${__dirname}/../public${dep}`))
-
-    let predate = new Date();
-    let before = predate.getTime();
-    console.log("before for: " + before)
 
     Promise.all(filesToRead)
       .then( (files) => {
-        let indate = new Date();
-        console.log("inside .then: "+indate.getTime())
-  
           files.map( (file, index) => {
             let stream = res.push(dependencies[index], {
               status: 200, // optional
@@ -61,12 +60,15 @@ router.get("/", async (req, res) => {
             })      
             stream.end(file)
           })
-          
+        let after_push = new Date();
+        let after_push_time = after_push.getTime();
+        console.log("PUSH time: " + after_push_time)
       })
     .catch(err => console.log(err))
-    let postdate = new Date();
-    let after = postdate.getTime();
-    console.log("after for: " + after)
+    let after_response = new Date();
+    let after_response_time = after_response.getTime();
+    let server_time= after_response_time - req_time;
+    console.log("Server time: " + server_time);
   } catch (error) {
     console.log(error);
     res.redirect("/");
