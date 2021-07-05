@@ -59,11 +59,17 @@ router.get("/", async (req, res) => {
         console.log(err)
       })      
       stream.end(file)
+
       push_count++;
+      if (push_count == 1) {
+        let after_first_push = new Date();
+        let after_first_push_time = after_first_push.getTime();
+        console.log("First PUSH time: " + after_first_push_time)
+      }
       if (push_count==3){
         let after_push = new Date();
         let after_push_time = after_push.getTime();
-        console.log("PUSH time: " + after_push_time)
+        console.log("Last PUSH time: " + after_push_time)
       }
       
     }).catch(err => console.log(err))
