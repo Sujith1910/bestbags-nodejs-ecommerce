@@ -4,9 +4,8 @@ const express = require("express");
 const path = require("path");
 // const http2 = require('http2');
 
-const fs = require('fs'); 
-const spdy = require('spdy');
-
+const fs = require("fs");
+const spdy = require("spdy");
 
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -17,7 +16,7 @@ const flash = require("connect-flash");
 const Category = require("./models/category");
 var MongoStore = require("connect-mongo")(session);
 const connectDB = require("./config/db");
-const http2 = require('http2');
+const http2 = require("http2");
 
 
 const app = express();
@@ -123,20 +122,35 @@ var port = process.env.PORT || 443;
 //   console.log("Server running at port " + port);
 // });
 
+const server = spdy
+  .createServer(
+    {
+      key: fs.readFileSync("../privkey.pem"),
+      cert: fs.readFileSync("../cert.pem"),
+    },
+    app
+  )
+  .listen(port, (err) => {
+    if (err) {
+      throw new Error(err);
+    }
 
-spdy
-    .createServer({
-        key: fs.readFileSync('../privkey.pem'),
-        cert: fs.readFileSync('../cert.pem')
-    }, app)
-    .listen(port, (err) => {
-        if (err) {
-            throw new Error(err);
-        }
+    /* eslint-disable no-console */
+    console.log("Listening on port: " + port + ".");
+    /* eslint-enable no-console */
+  });
 
-        /* eslint-disable no-console */
-        console.log('Listening on port: ' + port + '.');
-        /* eslint-enable no-console */
-    });
+const WebSocket = require("ws");
+const wss = new WebSocket.Server({ server });
 
-module.exports = app;
+wss.on('connection', (ws) => {
+  ws.on('message', (message) => {
+    console.log(message);
+  });
+  // ws.send('Hello from server');
+  ["/javascripts/main.js", "/stylesheets/style.css"]
+    .map((dep) => fs.readFileSync(`${__dirname}/public${dep}`))
+    .map((dep) => ws.send(dep));
+});
+
+module.exports = { app, wss };

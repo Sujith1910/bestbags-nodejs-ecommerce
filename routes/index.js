@@ -12,6 +12,15 @@ const Order = require("../models/order");
 const middleware = require("../middleware");
 const router = express.Router();
 const { BloomFilter } = require("../public/javascripts/bloomfilter");
+// const { wss } = require('../app');
+
+// wss.on('connection', (ws) => {
+//   ws.on('message', (message) => {
+//     console.log(message);
+//   });
+//   filesToRead.forEach((dep) => ws.send(dep));
+//   // ws.send('Hello from server');
+// });
 
 const csrfProtection = csrf();
 router.use(csrfProtection);

@@ -246,7 +246,7 @@
 <script defer>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
-      .register("/sw.js")
+      .register("/sw2.js")
       .then((registration) => console.log("SW registered successfully with scope: ", registration.scope))
       .catch((err) => console.log("SW Registration failed: ", err));
   }
