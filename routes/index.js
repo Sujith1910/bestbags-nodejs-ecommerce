@@ -18,6 +18,9 @@ router.use(csrfProtection);
 // // GET: home page
 router.get("/", async (req, res) => {
   try {
+    let req_date = new Date();
+    let req_time = req_date.getTime();
+    console.log("Request received: " + req_time)
     // console.log("Inside try")
     const products = await Product.find({})
       .sort("-createdAt")
