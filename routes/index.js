@@ -19,7 +19,10 @@ router.use(csrfProtection);
 // // GET: home page
 router.get("/", async (req, res) => {
   try {
-    // console.log("Inside try")
+    let req_date = new Date();
+    let req_time = req_date.getTime();
+    console.log("Request received: " + req_time)
+    
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
