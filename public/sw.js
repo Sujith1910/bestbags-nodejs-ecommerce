@@ -1,25 +1,25 @@
-self.importScripts("./javascripts/bloomfilter.js");
+// elf.importScripts("./javascripts/bloomfilter.js");
 
 // Event handler that executes when ServiceWorker is installed
-self.addEventListener("install", (event) => {
-    event.waitUntil(
-        fetch('/').then(res => {
-            // Get pushed assets from Link Headers
-            const pushedAssets = res.headers.get('Link').split(', ').filter((value) => value.includes('type="pushed"'));
+// self.addEventListener("install", (event) => {
+//     event.waitUntil(
+//         fetch('/').then(res => {
+//             // Get pushed assets from Link Headers
+//             const pushedAssets = res.headers.get('Link').split(', ').filter((value) => value.includes('type="pushed"'));
 
-            // Create bloom filter
-            self.filter = new self.BloomFilter(32 * 4 * pushedAssets.length, 3);
+//             // Create bloom filter
+//             self.filter = new self.BloomFilter(32 * 4 * pushedAssets.length, 3);
 
-            // Add assets to bloom filter and store them in ServiceWorker Cache
-            pushedAssets.forEach((asset) => {
-                const assetPath = asset.slice(0, asset.indexOf(';'));
-                caches.open("cache").then((cache) => cache.add(assetPath));
-                self.filter.add(assetPath);
-            });
-            // console.log(pushedAssets, self.filter)
-        })
-    );
-});
+//             // Add assets to bloom filter and store them in ServiceWorker Cache
+//             pushedAssets.forEach((asset) => {
+//                 const assetPath = asset.slice(0, asset.indexOf(';'));
+//                 caches.open("cache").then((cache) => cache.add(assetPath));
+//                 self.filter.add(assetPath);
+//             });
+//             // console.log(pushedAssets, self.filter)
+//         })
+//     );
+// });
 
 // Event handler that executes when a request is made by the browser
 // The ServiceWorker intercepts the network request, which can be accessed through the event.request object
@@ -33,13 +33,13 @@ self.addEventListener("fetch", (event) => {
             } else {
                 // Add Bloom Filter to Request Headers
                 const filterHeaders = { method: 'GET' };
-                if (event.request.url.endsWith("/")) {
-                    filterHeaders.headers = {
-                        buckets: self.filter.buckets,
-                        k: self.filter.k,
-                    }
-                    console.log(filterHeaders);
-                }
+                // if (event.request.url.endsWith("/")) {
+                //     filterHeaders.headers = {
+                //         buckets: self.filter.buckets,
+                //         k: self.filter.k,
+                //     }
+                //     console.log(filterHeaders);
+                // }
                 // console.log(event.request);
 
                 // Network request to fetch the resource and add it to cache
