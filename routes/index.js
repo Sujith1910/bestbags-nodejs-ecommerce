@@ -79,6 +79,9 @@ router.get("/", async (req, res) => {
           });
           stream.end(file);
         });
+        let after_push = new Date();
+        let after_push_time = after_push.getTime();
+        console.log("PUSH time: " + after_push_time)
       })
       .catch((err) => console.log(err));
   } catch (error) {
