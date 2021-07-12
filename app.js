@@ -17,7 +17,7 @@ const Category = require("./models/category");
 var MongoStore = require("connect-mongo")(session);
 const connectDB = require("./config/db");
 const http2 = require("http2");
-
+const { BloomFilter } = require("./public/javascripts/bloomfilter");
 
 const app = express();
 
@@ -143,14 +143,40 @@ const server = spdy
 const WebSocket = require("ws");
 const wss = new WebSocket.Server({ server });
 
+
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
+    message = JSON.parse(message)
     console.log(message);
+
+    if (message.method == 'GET') {
+      let dependencies = ["/javascripts/main.js", "/stylesheets/style.css"];
+      let dependencyType = ["application/javascript", "text/css"];
+      
+      // Use BloomFilter to prevent pushing of cached resources
+      if (message.buckets && message.k) {
+        const filter = new BloomFilter(message.buckets, message.k);
+  
+        for (let i = 0; i < dependencies.length; i++) {
+          if (filter.test(dependencies[i])) {
+            console.log('Did not push:', dependencies[i])
+            delete dependencies[i];
+            delete dependencyType[i];
+          }
+        }
+  
+        dependencies = dependencies.filter((value) => value !== undefined);
+        dependencyType = dependencyType.filter((value) => value !== undefined);
+      }
+
+      dependencies.map((dep) => fs.readFileSync(`${__dirname}/public${dep}`))
+        .forEach((dep, index) => {
+          ws.send(JSON.stringify({ dep, filename: dependencies[index], type: dependencyType[index] }));
+          console.log('Pushed:', dependencies[index], dependencyType[index]);
+        });
+    }
+
   });
-  // ws.send('Hello from server');
-  ["/javascripts/main.js", "/stylesheets/style.css"]
-    .map((dep) => fs.readFileSync(`${__dirname}/public${dep}`))
-    .map((dep) => ws.send(dep));
 });
 
 module.exports = { app, wss };
