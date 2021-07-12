@@ -28,6 +28,7 @@ self.addEventListener("install", (event) => {
 // Event handler that executes when a request is made by the browser
 // The ServiceWorker intercepts the network request, which can be accessed through the event.request object
 self.addEventListener("fetch", (event) => {
+    console.log(event.request)
     event.respondWith(
         // Check if requested resource is in ServiceWorker Cache
         caches.match(event.request).then((response) => {
