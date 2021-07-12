@@ -4,6 +4,8 @@ self.importScripts("./javascripts/bloomfilter.js");
 self.addEventListener("install", (event) => {
     self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
 
+    //List of URLs for caching WS responses.
+    self.requestUrls = [];
     const pushedAssetsLength = 2;
     self.filter = new self.BloomFilter(32 * 4 * pushedAssetsLength, 3);
 
@@ -18,9 +20,14 @@ self.addEventListener("install", (event) => {
         data = JSON.parse(event.data)
         console.log(data);
         self.filter.add(data.filename);
-
+        
         // Cache resource
-        // caches.open('ws-cache').then(cache => cache.put(Request, new Response(event.data)));
+        for(let i = 0; i < self.requestUrls.length; i++) {
+            if (self.requestUrls[i].endsWith(data.filename)) {
+                caches.open('ws-cache').then(cache => cache.put(self.requestUrls[i], new Response(data.dep)));
+                
+            }
+        }
     });
 });
 
@@ -28,7 +35,7 @@ self.addEventListener("install", (event) => {
 // Event handler that executes when a request is made by the browser
 // The ServiceWorker intercepts the network request, which can be accessed through the event.request object
 self.addEventListener("fetch", (event) => {
-    console.log(event.request)
+    // console.log(event.request)
     event.respondWith(
         // Check if requested resource is in ServiceWorker Cache
         caches.match(event.request).then((response) => {
@@ -36,6 +43,7 @@ self.addEventListener("fetch", (event) => {
                 console.log(`Got ${event.request.url} from cache`);
                 return response;
             } else {
+                self.requestUrls.push(event.request);
                 // Send Bloom Filter through WebSocket
                 const filterHeaders = { 'method': 'GET' };
                 if (event.request.url.endsWith("/")) {
