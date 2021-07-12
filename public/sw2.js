@@ -23,7 +23,7 @@ self.addEventListener("install", (event) => {
         
         // Cache resource
         for(let i = 0; i < self.requestUrls.length; i++) {
-            if (self.requestUrls[i].endsWith(data.filename)) {
+            if (self.requestUrls[i].url.endsWith(data.filename)) {
                 caches.open('ws-cache').then(cache => cache.put(self.requestUrls[i], new Response(data.dep)));
                 
             }
