@@ -5,7 +5,7 @@ self.addEventListener("install", (event) => {
     self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
 
     //List of URLs for caching WS responses.
-    self.requestUrls = [];
+    self.requestsData = [];
     const pushedAssetsLength = 2;
     self.filter = new self.BloomFilter(32 * 4 * pushedAssetsLength, 3);
 
@@ -22,9 +22,9 @@ self.addEventListener("install", (event) => {
         self.filter.add(data.filename);
         
         // Cache resource
-        for(let i = 0; i < self.requestUrls.length; i++) {
-            if (self.requestUrls[i].url.endsWith(data.filename)) {
-                caches.open('ws-cache').then(cache => cache.put(self.requestUrls[i], new Response(data.dep)));
+        for(let i = 0; i < self.requestsData.length; i++) {
+            if (self.requestsData[i].url.endsWith(data.filename)) {
+                caches.open('ws-cache').then(cache => cache.put(self.requestsData[i], new Response(data.dep)));
                 
             }
         }
@@ -43,7 +43,7 @@ self.addEventListener("fetch", (event) => {
                 console.log(`Got ${event.request.url} from cache`);
                 return response;
             } else {
-                self.requestUrls.push(event.request);
+                self.requestsData.push(event.request);
                 // Send Bloom Filter through WebSocket
                 const filterHeaders = { 'method': 'GET' };
                 if (event.request.url.endsWith("/")) {
