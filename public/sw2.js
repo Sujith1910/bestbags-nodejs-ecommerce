@@ -10,3 +10,5 @@ self.addEventListener("install", (event) => {
         console.log(event.data);
     });
 });
+
+// TODO: fetch
