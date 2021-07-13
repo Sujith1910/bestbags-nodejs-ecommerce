@@ -150,8 +150,8 @@ wss.on('connection', (ws) => {
     console.log(message);
 
     if (message.method == 'GET') {
-      let dependencies = ["/javascripts/main.js", "/stylesheets/style.css", "displayNavigationTiming.js", "displayResourceLoadTime.js", "displayResourceSize.js", "search.js"];
-      let dependencyType = ["application/javascript", "text/css", "application/javascript", "application/javascript", "application/javascript", "application/javascript"];
+      let dependencies = ["/javascripts/main.js", "/stylesheets/style.css"];
+      let dependencyType = ["application/javascript", "text/css"];
       
       // Use BloomFilter to prevent pushing of cached resources
       if (message.buckets && message.k) {
