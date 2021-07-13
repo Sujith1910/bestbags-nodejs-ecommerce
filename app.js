@@ -4,7 +4,9 @@ const express = require("express");
 const path = require("path");
 // const http2 = require('http2');
 
-const fs = require("fs");
+// const fs = require("fs");
+const Promise =  require('bluebird');
+const fs = Promise.promisifyAll(require('fs')); 
 const spdy = require("spdy");
 
 const cookieParser = require("cookie-parser");
@@ -168,15 +170,27 @@ wss.on('connection', (ws) => {
         dependencies = dependencies.filter((value) => value !== undefined);
         dependencyType = dependencyType.filter((value) => value !== undefined);
       }
-
-      dependencies.map((dep) => fs.readFileSync(`${__dirname}/public${dep}`))
-        .forEach((dep, index) => {
-          ws.send(JSON.stringify({ dep, filename: dependencies[index], type: dependencyType[index] }));
-          console.log('Pushed:', dependencies[index], dependencyType[index]);
-        });
-        let after_push = new Date();
-        let after_push_time = after_push.getTime();
-        console.log("PUSH time: " + after_push_time)  
+      console.log(dependencies);
+      
+      for(let index = 0; index < dependencies.length; index++) {
+        fs.readFileAsync(`${__dirname}/public${dependencies[index]}`)
+        .then( (file) => {
+          ws.send(JSON.stringify({ file, filename: dependencies[index], type: dependencyType[index] }));
+          if (index==dependencies.length-1){
+            let after_push = new Date();
+            let after_push_time = after_push.getTime();
+            console.log("PUSH time: " + after_push_time)
+          }
+        })
+      }
+      // dependencies.map((dep) => fs.readFileSync(`${__dirname}/public${dep}`))
+      //   .forEach((dep, index) => {
+      //     ws.send(JSON.stringify({ dep, filename: dependencies[index], type: dependencyType[index] }));
+      //     console.log('Pushed:', dependencies[index], dependencyType[index]);
+      //   });
+      //   let after_push = new Date();
+      //   let after_push_time = after_push.getTime();
+      //   console.log("PUSH time: " + after_push_time)  
     }
 
   });
