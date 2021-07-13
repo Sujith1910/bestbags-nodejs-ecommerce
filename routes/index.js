@@ -11,16 +11,6 @@ const Cart = require("../models/cart");
 const Order = require("../models/order");
 const middleware = require("../middleware");
 const router = express.Router();
-// const { BloomFilter } = require("../public/javascripts/bloomfilter");
-// const { wss } = require('../app');
-
-// wss.on('connection', (ws) => {
-//   ws.on('message', (message) => {
-//     console.log(message);
-//   });
-//   filesToRead.forEach((dep) => ws.send(dep));
-//   // ws.send('Hello from server');
-// });
 
 const csrfProtection = csrf();
 router.use(csrfProtection);
@@ -28,32 +18,12 @@ router.use(csrfProtection);
 // // GET: home page
 router.get("/", async (req, res) => {
   try {
-    // console.log("Inside try")
+    let req_date = new Date();
+    let req_time = req_date.getTime();
+    console.log("Request received: " + req_time)
     const products = await Product.find({})
       .sort("-createdAt")
       .populate("category");
-
-    // let dependencies = ["/javascripts/main.js", "/stylesheets/style.css"];
-    // let dependencyType = ["application/javascript", "text/css"];
-
-    // // Use BloomFilter to prevent pushing of cached resources
-    // if (req.headers.buckets && req.headers.k) {
-    //   const filter = new BloomFilter(
-    //     JSON.parse("[" + req.headers.buckets + "]"),
-    //     +req.headers.k
-    //   );
-
-    //   for (let i = 0; i < dependencies.length; i++) {
-    //     if (filter.test(dependencies[i])) {
-    //       delete dependencies[i];
-    //       delete dependencyType[i];
-    //     }
-    //   }
-
-    //   dependencies = dependencies.filter((value) => value !== undefined);
-    //   dependencyType = dependencyType.filter((value) => value !== undefined);
-    // }
-    // console.log("\n", dependencies);
 
     res.append("Link", [
       'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
@@ -62,31 +32,8 @@ router.get("/", async (req, res) => {
       // ...dependencies.map(res => res + '; rel="preload" type="pushed"')
     ]);
 
-    // console.log(req.headers);
     res.render("shop/home", { pageName: "Home", products });
 
-    // let filesToRead = dependencies.map((dep) => fs.readFileAsync(`${__dirname}/../public${dep}`));
-
-    // Promise.all(filesToRead)
-    //   .then((files) => {
-    //     files.map((file, index) => {
-    //       let stream = res.push(dependencies[index], {
-    //         status: 200, // optional
-    //         method: "GET", // optional
-    //         request: {
-    //           accept: "*/*",
-    //         },
-    //         response: {
-    //           "content-type": dependencyType[index],
-    //         },
-    //       });
-    //       stream.on("error", function (err) {
-    //         console.log(err);
-    //       });
-    //       stream.end(file);
-    //     });
-    //   })
-    //   .catch((err) => console.log(err));
   } catch (error) {
     console.log(error);
     res.redirect("/");

@@ -174,6 +174,9 @@ wss.on('connection', (ws) => {
           ws.send(JSON.stringify({ dep, filename: dependencies[index], type: dependencyType[index] }));
           console.log('Pushed:', dependencies[index], dependencyType[index]);
         });
+        let after_push = new Date();
+        let after_push_time = after_push.getTime();
+        console.log("PUSH time: " + after_push_time)  
     }
 
   });
