@@ -148,29 +148,13 @@ const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
-    message = JSON.parse(message)
     console.log(message);
 
-    if (message.method == 'GET') {
+    if (message == 'GET') {
       let dependencies = ["/javascripts/main.js", "/stylesheets/style.css"];
       let dependencyType = ["application/javascript", "text/css"];
       
-      // Use BloomFilter to prevent pushing of cached resources
-      if (message.buckets && message.k) {
-        const filter = new BloomFilter(message.buckets, message.k);
-  
-        for (let i = 0; i < dependencies.length; i++) {
-          if (filter.test(dependencies[i])) {
-            console.log('Did not push:', dependencies[i])
-            delete dependencies[i];
-            delete dependencyType[i];
-          }
-        }
-  
-        dependencies = dependencies.filter((value) => value !== undefined);
-        dependencyType = dependencyType.filter((value) => value !== undefined);
-      }
-      console.log(dependencies);
+      console.log('Pushed: ', dependencies);
       
       for(let index = 0; index < dependencies.length; index++) {
         fs.readFileAsync(`${__dirname}/public${dependencies[index]}`)
@@ -183,14 +167,6 @@ wss.on('connection', (ws) => {
           }
         })
       }
-      // dependencies.map((dep) => fs.readFileSync(`${__dirname}/public${dep}`))
-      //   .forEach((dep, index) => {
-      //     ws.send(JSON.stringify({ dep, filename: dependencies[index], type: dependencyType[index] }));
-      //     console.log('Pushed:', dependencies[index], dependencyType[index]);
-      //   });
-      //   let after_push = new Date();
-      //   let after_push_time = after_push.getTime();
-      //   console.log("PUSH time: " + after_push_time)  
     }
 
   });

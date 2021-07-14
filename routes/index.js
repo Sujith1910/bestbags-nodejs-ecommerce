@@ -29,7 +29,6 @@ router.get("/", async (req, res) => {
       'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-solid-900.woff2; rel="preload" as="font"',
       'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-brands-400.woff2; rel="preload" as="font"',
       'https://ka-f.fontawesome.com/releases/v5.15.3/webfonts/free-fa-regular-400.woff2; rel="preload" as="font"',
-      // ...dependencies.map(res => res + '; rel="preload" type="pushed"')
     ]);
 
     res.render("shop/home", { pageName: "Home", products });
