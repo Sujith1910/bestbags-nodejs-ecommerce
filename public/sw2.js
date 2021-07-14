@@ -3,7 +3,7 @@ self.importScripts("./javascripts/bloomfilter.js");
 // Event handler that executes when ServiceWorker is installed
 self.addEventListener("install", (event) => {
     self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
-
+    self.requestsData = []
     self.ws.addEventListener('message', (event) => {
         // console.log(event.data);
         data = JSON.parse(event.data)
@@ -29,7 +29,7 @@ self.addEventListener("fetch", (event) => {
                 console.log(`Got ${event.request.url} from cache`);
                 return response;
             } else {
-                self.requestsData.push(event.request);
+                // self.requestsData.push(event.request);
                 // Send Bloom Filter through WebSocket
                 const filterHeaders = { 'method': 'GET' };
                 if (event.request.url.endsWith("/")) {
