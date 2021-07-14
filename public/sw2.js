@@ -4,6 +4,10 @@ self.importScripts("./javascripts/bloomfilter.js");
 self.addEventListener("install", (event) => {
     self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
     self.requestsData = []
+    self.ws.addEventListener('open', (event) => {
+        self.ws.send("GET")
+    })
+
     self.ws.addEventListener('message', (event) => {
         // console.log(event.data);
         data = JSON.parse(event.data)
