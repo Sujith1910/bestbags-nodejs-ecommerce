@@ -2,8 +2,8 @@ self.importScripts("./javascripts/bloomfilter.js");
 
 // Event handler that executes when ServiceWorker is installed
 self.addEventListener("install", (event) => {
-    // self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
-    self.ws = new WebSocket('wss://localhost:50443');
+    self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
+    // self.ws = new WebSocket('wss://localhost:50443');
     self.requestsData = []
     self.ws.addEventListener('open', (event) => {
         self.ws.send("GET")
