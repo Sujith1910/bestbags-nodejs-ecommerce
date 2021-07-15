@@ -171,7 +171,15 @@ wss.on('connection', (ws) => {
         dependencyType = dependencyType.filter((value) => value !== undefined);
       }
       console.log('Pushed:', dependencies);
+
+      // If nothing is being pushed, close connection
+      if (dependencies.length == 0) {
+        ws.send('CLOSE');
+        console.log("PUSH time: " + new Date().getTime());
+        return;
+      }
       
+      // Push dependencies
       for(let index = 0; index < dependencies.length; index++) {
         fs.readFileAsync(`${__dirname}/public${dependencies[index]}`)
         .then( (file) => {
