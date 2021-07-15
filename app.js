@@ -170,30 +170,26 @@ wss.on('connection', (ws) => {
         dependencies = dependencies.filter((value) => value !== undefined);
         dependencyType = dependencyType.filter((value) => value !== undefined);
       }
-      console.log(dependencies);
+      console.log('Pushed:', dependencies);
       
       for(let index = 0; index < dependencies.length; index++) {
         fs.readFileAsync(`${__dirname}/public${dependencies[index]}`)
         .then( (file) => {
           ws.send(JSON.stringify({ file, filename: dependencies[index], type: dependencyType[index] }));
+
           if (index==dependencies.length-1){
             let after_push = new Date();
             let after_push_time = after_push.getTime();
-            console.log("PUSH time: " + after_push_time)
+            console.log("PUSH time: " + after_push_time);
+
+            ws.send('CLOSE');
           }
         })
       }
-      // dependencies.map((dep) => fs.readFileSync(`${__dirname}/public${dep}`))
-      //   .forEach((dep, index) => {
-      //     ws.send(JSON.stringify({ dep, filename: dependencies[index], type: dependencyType[index] }));
-      //     console.log('Pushed:', dependencies[index], dependencyType[index]);
-      //   });
-      //   let after_push = new Date();
-      //   let after_push_time = after_push.getTime();
-      //   console.log("PUSH time: " + after_push_time)  
     }
-
   });
+
+  ws.on('close', () => console.log('WebSocket Connection Closed'));
 });
 
 module.exports = { app, wss };

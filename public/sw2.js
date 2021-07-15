@@ -3,30 +3,36 @@ self.importScripts("./javascripts/bloomfilter.js");
 // Event handler that executes when ServiceWorker is installed
 self.addEventListener("install", (event) => {
     self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
+    // self.ws = new WebSocket('wss://localhost:50443');
 
     //List of URLs for caching WS responses.
     self.requestsData = [];
+
+    // Create BloomFilter
     const pushedAssetsLength = 2;
     self.filter = new self.BloomFilter(32 * 4 * pushedAssetsLength, 3);
 
-    // console.log(window.location)
+    // Fires when WebSocket connection is first opened 
+    self.ws.addEventListener('open', (event) => {
+        self.ws.send(`{"method":"GET","buckets":[${self.filter.buckets}],"k":${self.filter.k}}`);
+    });
 
-    // // self.ws.addEventListener('open', (event) => {
-    // //     ws.send('Hello from client');
-    // // });
-
+    // Fires when a message is received from the server (in this cases, pushed assets)
     self.ws.addEventListener('message', (event) => {
         // console.log(event.data);
-        data = JSON.parse(event.data)
-        console.log(data);
-        self.filter.add(data.filename);
-        
-        // Cache resource
-        for(let i = 0; i < self.requestsData.length; i++) {
-            if (self.requestsData[i].url.endsWith(data.filename)) {
-                caches.open('ws-cache').then(cache => cache.put(self.requestsData[i], new Response(data.dep)));
-                
-            }
+        if (event.data == 'CLOSE') {
+            self.ws.close();
+        } else {
+            data = JSON.parse(event.data)
+            console.log(data);
+            self.filter.add(data.filename);
+
+            // Cache resource
+            // for(let i = 0; i < self.requestsData.length; i++) {
+            //     if (self.requestsData[i].url.endsWith(data.filename)) {
+            //         caches.open('ws-cache').then(cache => cache.put(self.requestsData[i], new Response(data.dep)));   
+            //     }
+            // }
         }
     });
 });
@@ -47,7 +53,29 @@ self.addEventListener("fetch", (event) => {
                 // Send Bloom Filter through WebSocket
                 const filterHeaders = { 'method': 'GET' };
                 if (event.request.url.endsWith("/")) {
-                    self.ws.send(`{"method":"GET","buckets":[${self.filter.buckets}],"k":${self.filter.k}}`);
+                    self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
+                    // self.ws = new WebSocket('wss://localhost:50443');
+
+                    self.ws.addEventListener('open', (event) => {
+                        self.ws.send(`{"method":"GET","buckets":[${self.filter.buckets}],"k":${self.filter.k}}`);
+                    });
+
+                    self.ws.addEventListener('message', (event) => {
+                        if (event.data == 'CLOSE') {
+                            self.ws.close();
+                        } else {
+                            data = JSON.parse(event.data)
+                            console.log(data);
+                            self.filter.add(data.filename);
+                
+                            // Cache resource
+                            // for(let i = 0; i < self.requestsData.length; i++) {
+                            //     if (self.requestsData[i].url.endsWith(data.filename)) {
+                            //         caches.open('ws-cache').then(cache => cache.put(self.requestsData[i], new Response(data.dep)));   
+                            //     }
+                            // }
+                        }
+                    });
                 }
 
                 // console.log(event.request);
