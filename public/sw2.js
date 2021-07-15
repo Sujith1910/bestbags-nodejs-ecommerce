@@ -6,12 +6,12 @@ self.addEventListener("install", (event) => {
     // self.ws = new WebSocket('wss://localhost:50443');
     self.requestsData = []
     self.ws.addEventListener('open', (event) => {
-        self.ws.send("GET")
+        self.ws.send('GET')
     })
 
     self.ws.addEventListener('message', (event) => {
         // console.log(event.data);
-        if (event.data == 'close') {
+        if (event.data == 'CLOSE') {
             self.ws.close()
         } else {
             data = JSON.parse(event.data)
@@ -42,13 +42,15 @@ self.addEventListener("fetch", (event) => {
                 // Send Bloom Filter through WebSocket
                 const filterHeaders = { 'method': 'GET' };
                 if (event.request.url.endsWith("/")) {
-                    self.ws = new WebSocket('wss://localhost:50443');
+                    self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
+                    // self.ws = new WebSocket('wss://localhost:50443');
                     self.ws.addEventListener('open', (event) => {
-                        self.ws.send("GET")
-                    })
+                        self.ws.send('GET')
+                    });
+
                     self.ws.addEventListener('message', (event) => {
                         // console.log(event.data);
-                        if (event.data == 'close') {
+                        if (event.data == 'CLOSE') {
                             self.ws.close()
                         } else {
                             data = JSON.parse(event.data)

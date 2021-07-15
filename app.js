@@ -160,11 +160,13 @@ wss.on('connection', (ws) => {
         fs.readFileAsync(`${__dirname}/public${dependencies[index]}`)
         .then( (file) => {
           ws.send(JSON.stringify({ file, filename: dependencies[index], type: dependencyType[index] }));
+          
           if (index==dependencies.length-1){
             let after_push = new Date();
             let after_push_time = after_push.getTime();
             console.log("PUSH time: " + after_push_time)
-            ws.send('close');
+
+            ws.send('CLOSE');
           }
         })
       }
@@ -172,7 +174,7 @@ wss.on('connection', (ws) => {
 
   });
 
-  ws.on('close', () => console.log('Closed the WebSocket Connection'))
+  ws.on('close', () => console.log('WebSocket Connection Closed'))
 });
 
 module.exports = { app, wss };
