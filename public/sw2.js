@@ -2,7 +2,8 @@ self.importScripts("./javascripts/bloomfilter.js");
 
 // Event handler that executes when ServiceWorker is installed
 self.addEventListener("install", (event) => {
-    self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
+    // self.ws = new WebSocket('wss://demo-ecommerce.akalab.ca/');
+    self.ws = new WebSocket('wss://localhost:50443');
     self.requestsData = []
     self.ws.addEventListener('open', (event) => {
         self.ws.send("GET")
@@ -10,8 +11,12 @@ self.addEventListener("install", (event) => {
 
     self.ws.addEventListener('message', (event) => {
         // console.log(event.data);
-        data = JSON.parse(event.data)
-        console.log(data);
+        if (event.data == 'close') {
+            self.ws.close()
+        } else {
+            data = JSON.parse(event.data)
+            console.log(data);
+        }
         
         // Cache resource
         // for(let i = 0; i < self.requestsData.length; i++) {
@@ -37,7 +42,19 @@ self.addEventListener("fetch", (event) => {
                 // Send Bloom Filter through WebSocket
                 const filterHeaders = { 'method': 'GET' };
                 if (event.request.url.endsWith("/")) {
-                    self.ws.send("GET");
+                    self.ws = new WebSocket('wss://localhost:50443');
+                    self.ws.addEventListener('open', (event) => {
+                        self.ws.send("GET")
+                    })
+                    self.ws.addEventListener('message', (event) => {
+                        // console.log(event.data);
+                        if (event.data == 'close') {
+                            self.ws.close()
+                        } else {
+                            data = JSON.parse(event.data)
+                            console.log(data);
+                        }
+                    });
                 }
 
                 // console.log(event.request);

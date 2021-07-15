@@ -164,12 +164,15 @@ wss.on('connection', (ws) => {
             let after_push = new Date();
             let after_push_time = after_push.getTime();
             console.log("PUSH time: " + after_push_time)
+            ws.send('close');
           }
         })
       }
     }
 
   });
+
+  ws.on('close', () => console.log('Closed the WebSocket Connection'))
 });
 
 module.exports = { app, wss };
