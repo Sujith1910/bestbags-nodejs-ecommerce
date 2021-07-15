@@ -62,9 +62,9 @@ router.get("/", async (req, res) => {
             })      
             stream.end(file)
 
-          let after_push = new Date();
-          let after_push_time = after_push.getTime();
-          console.log("Solo push time: " + after_push_time)
+          // let after_push = new Date();
+          // let after_push_time = after_push.getTime();
+          // console.log("Solo push time: " + after_push_time)
           })
           let after_push = new Date();
           let after_push_time = after_push.getTime();
